@@ -1,6 +1,3 @@
-// Copyright (C) 2016 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
-
 #pragma once
 
 #include <QDialog>
@@ -13,9 +10,7 @@ class QTextEdit;
 class QLineEdit;
 QT_END_NAMESPACE
 
-//! [0]
-class AddDialog : public QDialog
-{
+class AddDialog : public QDialog {
     Q_OBJECT
 
 public:

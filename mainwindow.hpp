@@ -13,7 +13,6 @@ public:
         createMenus();
 		setWindowTitle("KTaskman");
 		// setWindowIcon(QIcon(":/images/icon.png"));
-		// setUnifiedTitleAndToolBarOnMac(true);
 		setMinimumSize(500, 400);
     }
 

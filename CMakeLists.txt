@@ -1,15 +1,25 @@
-cmake_minimum_required(VERSION 3.16)
-project(taskman LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.26)
+
+if (NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+endif()
+
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+project(taskman 
+    VERSION 0.1
+    DESCRIPTION "Qt Clone of Windows Task Manager"
+    LANGUAGES CXX)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 qt_standard_project_setup()
 
 qt_add_executable(taskman
-    addresswidget.cpp addresswidget.hpp
     main.cpp
-    mainwindow.cpp mainwindow.hpp
-    tablemodel.cpp tablemodel.hpp
+    addresswidget.hpp
+    mainwindow.hpp
+    tablemodel.hpp
 )
 
 set_target_properties(taskman PROPERTIES

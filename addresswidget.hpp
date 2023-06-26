@@ -16,44 +16,35 @@ class AddressWidget : public QTabWidget {
     Q_OBJECT
 
 public:
-	AddressWidget(QWidget *parent = nullptr): QTabWidget(parent), table(new TableModel(this))
-	// , newAddressTab(new NewAddressTab(this)) 
-	{
-		// connect(newAddressTab, &NewAddressTab::sendDetails, this, &AddressWidget::addEntry);
-		// addTab(newAddressTab, tr("Address Book"));
-		setupTabs();
-	}
-	void readFromFile() {
-		QFile file(fileName);
+	AddressWidget(QWidget *parent = nullptr): QTabWidget(parent), table(new TableModel(this)) {
+		using namespace Qt::StringLiterals;
+		const auto groups = { "Processes"_L1, "Performance"_L1, "Startup"_L1, "Users"_L1, "Details"_L1, "Services"_L1};
 
-		if (!file.open(QIODevice::ReadOnly)) {
-			QMessageBox::information(this, "Unable to open file", file.errorString());
-			return;
-		}
+		for (QLatin1StringView str : groups) {
+			const auto regExp = QRegularExpression(QLatin1StringView("^[%1].*").arg(str), QRegularExpression::CaseInsensitiveOption);
 
-		QList<Contact> contacts;
-		QDataStream in(&file);
-		in >> contacts;
+			auto proxyModel = new QSortFilterProxyModel(this);
+			proxyModel->setSourceModel(table);
+			proxyModel->setFilterRegularExpression(regExp);
+			proxyModel->setFilterKeyColumn(0);
 
-		if (contacts.isEmpty()) {
-			QMessageBox::information(this, "No contacts in file",
-									 "The file you are attempting to open contains no contacts.");
-		} else {
-			for (const auto &contact: std::as_const(contacts))
-				addEntry(contact.name, contact.address);
-		}
-	}
+			QTableView *tableView = new QTableView;
+			tableView->setModel(proxyModel);
+			tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+			tableView->horizontalHeader()->setStretchLastSection(true);
+			tableView->verticalHeader()->hide();
+			tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+			tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+			tableView->setSortingEnabled(true);
 
-	void writeToFile(){
-		QFile file(fileName);
+			connect(tableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AddressWidget::selectionChanged);
 
-		if (!file.open(QIODevice::WriteOnly)) {
-			QMessageBox::information(this, "Unable to open file", file.errorString());
-			return;
-		}
+			connect(this, &QTabWidget::currentChanged, this, [this, tableView](int tabIndex) {
+				if (widget(tabIndex) == tableView)
+					emit selectionChanged(tableView->selectionModel()->selection());
+			});
 
-		QDataStream out(&file);
-		out << table->getContacts();
+			addTab(tableView, str);		}
 	}
 
 
@@ -126,41 +117,5 @@ signals:
     void selectionChanged (const QItemSelection &selected);
 
 private:
-	void setupTabs(){
-		using namespace Qt::StringLiterals;
-		const auto groups = { "Processes"_L1, "Performance"_L1, "Startup"_L1, "Users"_L1, "Details"_L1, "Services"_L1};
-
-		for (QLatin1StringView str : groups) {
-			const auto regExp = QRegularExpression(QLatin1StringView("^[%1].*").arg(str),
-												   QRegularExpression::CaseInsensitiveOption);
-
-			auto proxyModel = new QSortFilterProxyModel(this);
-			proxyModel->setSourceModel(table);
-			proxyModel->setFilterRegularExpression(regExp);
-			proxyModel->setFilterKeyColumn(0);
-
-			QTableView *tableView = new QTableView;
-			tableView->setModel(proxyModel);
-			tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-			tableView->horizontalHeader()->setStretchLastSection(true);
-			tableView->verticalHeader()->hide();
-			tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-			tableView->setSelectionMode(QAbstractItemView::SingleSelection);
-			tableView->setSortingEnabled(true);
-
-			connect(tableView->selectionModel(), &QItemSelectionModel::selectionChanged,
-					this, &AddressWidget::selectionChanged);
-
-			connect(this, &QTabWidget::currentChanged, this, [this, tableView](int tabIndex) {
-				if (widget(tabIndex) == tableView)
-					emit selectionChanged(tableView->selectionModel()->selection());
-			});
-
-			addTab(tableView, str);
-		}
-	}
-
-    inline static QString fileName = QStandardPaths::standardLocations(QStandardPaths::TempLocation).value(0) + QStringLiteral("/addressbook.dat");
     TableModel *table;
-    // NewAddressTab *newAddressTab;
 };

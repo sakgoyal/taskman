@@ -10,7 +10,6 @@ struct Contact {
 };
 
 inline QDataStream &operator<<(QDataStream &stream, const Contact &contact) { return stream << contact.name << contact.address; }
-
 inline QDataStream &operator>>(QDataStream &stream, Contact &contact) { return stream >> contact.name >> contact.address; }
 
 class TableModel : public QAbstractTableModel {
@@ -18,21 +17,14 @@ class TableModel : public QAbstractTableModel {
 
 public:
     TableModel(QObject *parent = nullptr): QAbstractTableModel(parent) {}
-    TableModel(const QList<Contact> &contacts, QObject *parent = nullptr) : QAbstractTableModel(parent), contacts(contacts)
-    { }
+    TableModel(const QList<Contact> &contacts, QObject *parent = nullptr) : QAbstractTableModel(parent), contacts(contacts) { }
 
-    int rowCount(const QModelIndex &parent) const override{
-        return parent.isValid() ? 0 : contacts.size();
-    }
-    int columnCount(const QModelIndex &parent) const override{
-        return parent.isValid() ? 0 : 2;
-    }
+    int rowCount(const QModelIndex &parent) const override{ return parent.isValid() ? 0 : contacts.size(); }
+    int columnCount(const QModelIndex &parent) const override{ return parent.isValid() ? 0 : 2; }
     QVariant data(const QModelIndex &index, int role) const override{
-        if (!index.isValid())
-            return QVariant();
+        if (!index.isValid()) return QVariant();
 
-        if (index.row() >= contacts.size() || index.row() < 0)
-            return QVariant();
+        if (index.row() >= contacts.size() || index.row() < 0) return QVariant();
 
         if (role == Qt::DisplayRole) {
             const auto &contact = contacts.at(index.row());
