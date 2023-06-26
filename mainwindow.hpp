@@ -1,9 +1,15 @@
-#pragma once
+#ifndef MAINWINDOW_HPP
+#define MAINWINDOW_HPP
 #include <QMainWindow>
 #include <QAction>
 #include <QFileDialog>
 #include <QMenuBar>
 #include "addresswidget.hpp"
+#include <QCoreApplication>
+#include <QDir>
+#include <iostream>
+
+
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
@@ -15,6 +21,27 @@ public:
 		// setWindowIcon(QIcon(":/images/icon.png"));
 		setMinimumSize(500, 400);
     }
+
+	std::vector<std::string> getProcList(std::string dir){
+		std::vector<std::string> procList;
+    	QStringList processDirs = QDir("/proc").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    	for (auto processDir : processDirs) {
+        	bool ok;
+        	int pid = processDir.toInt(&ok);
+        	if (ok) {
+    	        QFile stat(QString("/proc/%1/stat").arg(pid));
+        	    if (stat.open(QIODevice::ReadOnly)) {
+            	    QString statData = stat.readLine();
+                	QStringList statParts = statData.split(' ');
+
+	                // Extract the desired process information from 'statParts' list
+    	            auto processName = statParts.at(1).trimmed().toStdString();
+        	        std::cout << "\nPID:" << pid << " Name:" << processName << "Dir: " << processDir.toStdString();
+            	}
+        	}
+    	}
+		return procList;
+	}
 
 private:
 	void createMenus(){
@@ -48,3 +75,5 @@ private:
     QAction *removeAct;
 	QAction *refreshSpAct;
 };
+
+#endif // MAINWINDOW_HPP

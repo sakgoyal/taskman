@@ -38,3 +38,7 @@ install(TARGETS taskman
     BUNDLE DESTINATION "${INSTALL_EXAMPLEDIR}"
     LIBRARY DESTINATION "${INSTALL_EXAMPLEDIR}"
 )
+
+# Link against libprocps
+# find_library(LIB_PROCPS procps)
+# target_link_libraries(taskman PRIVATE ${LIB_PROCPS})
