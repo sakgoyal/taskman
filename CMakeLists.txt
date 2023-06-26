@@ -6,11 +6,9 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 qt_standard_project_setup()
 
 qt_add_executable(taskman
-    adddialog.cpp adddialog.hpp
     addresswidget.cpp addresswidget.hpp
     main.cpp
     mainwindow.cpp mainwindow.hpp
-    newaddresstab.cpp newaddresstab.hpp
     tablemodel.cpp tablemodel.hpp
 )
 

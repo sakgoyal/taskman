@@ -6,27 +6,20 @@ struct Contact {
     QString name;
     QString address;
 
-	bool operator==(const Contact &other) const {
-        return name == other.name && address == other.address;
-    }
+	bool operator==(const Contact &other) const { return name == other.name && address == other.address; }
 };
 
-inline QDataStream &operator<<(QDataStream &stream, const Contact &contact) {
-    return stream << contact.name << contact.address;
-}
+inline QDataStream &operator<<(QDataStream &stream, const Contact &contact) { return stream << contact.name << contact.address; }
 
-inline QDataStream &operator>>(QDataStream &stream, Contact &contact) {
-    return stream >> contact.name >> contact.address;
-}
+inline QDataStream &operator>>(QDataStream &stream, Contact &contact) { return stream >> contact.name >> contact.address; }
 
 class TableModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
     TableModel(QObject *parent = nullptr): QAbstractTableModel(parent) {}
-    TableModel(const QList<Contact> &contacts, QObject *parent = nullptr)    : QAbstractTableModel(parent), contacts(contacts)
-    {
-    }
+    TableModel(const QList<Contact> &contacts, QObject *parent = nullptr) : QAbstractTableModel(parent), contacts(contacts)
+    { }
 
     int rowCount(const QModelIndex &parent) const override{
         return parent.isValid() ? 0 : contacts.size();

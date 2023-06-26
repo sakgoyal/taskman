@@ -1,26 +1,26 @@
 #pragma once
-#include "newaddresstab.hpp"
 #include "tablemodel.hpp"
 
 #include <QItemSelection>
 #include <QTabWidget>
 #include <QStandardPaths>
-
+#include <QWidget>
+#include <QtWidgets>
 
 QT_BEGIN_NAMESPACE
 class QSortFilterProxyModel;
 class QItemSelectionModel;
 QT_END_NAMESPACE
 
-//! [0]
-class AddressWidget : public QTabWidget
-{
+class AddressWidget : public QTabWidget {
     Q_OBJECT
 
 public:
-	AddressWidget(QWidget *parent = nullptr): QTabWidget(parent), table(new TableModel(this)), newAddressTab(new NewAddressTab(this)) {
-		connect(newAddressTab, &NewAddressTab::sendDetails, this, &AddressWidget::addEntry);
-		addTab(newAddressTab, tr("Address Book"));
+	AddressWidget(QWidget *parent = nullptr): QTabWidget(parent), table(new TableModel(this))
+	// , newAddressTab(new NewAddressTab(this)) 
+	{
+		// connect(newAddressTab, &NewAddressTab::sendDetails, this, &AddressWidget::addEntry);
+		// addTab(newAddressTab, tr("Address Book"));
 		setupTabs();
 	}
 	void readFromFile() {
@@ -59,67 +59,67 @@ public:
 
 public slots:
 	void showAddEntryDialog(){
-		AddDialog aDialog;
-		if (aDialog.exec())
-			addEntry(aDialog.name(), aDialog.address());
+		// AddDialog aDialog;
+		// if (aDialog.exec())
+		// 	addEntry(aDialog.name(), aDialog.address());
 	}
 	void addEntry(const QString &name, const QString &address){
-		if (!table->getContacts().contains({ name, address })) {
-			table->insertRows(0, 1, QModelIndex());
+		// if (!table->getContacts().contains({ name, address })) {
+		// 	table->insertRows(0, 1, QModelIndex());
 
-			QModelIndex index = table->index(0, 0, QModelIndex());
-			table->setData(index, name, Qt::EditRole);
-			index = table->index(0, 1, QModelIndex());
-			table->setData(index, address, Qt::EditRole);
-			removeTab(indexOf(newAddressTab));
-		} else  QMessageBox::information(this, "Duplicate Name", tr("The name \"%1\" already exists.").arg(name));
+		// 	QModelIndex index = table->index(0, 0, QModelIndex());
+		// 	table->setData(index, name, Qt::EditRole);
+		// 	index = table->index(0, 1, QModelIndex());
+		// 	table->setData(index, address, Qt::EditRole);
+		// 	removeTab(indexOf(newAddressTab));
+		// } else  QMessageBox::information(this, "Duplicate Name", tr("The name \"%1\" already exists.").arg(name));
 	}
 	void editEntry(){
-		QTableView *temp = static_cast<QTableView*>(currentWidget());
-		QSortFilterProxyModel *proxy = static_cast<QSortFilterProxyModel*>(temp->model());
-		QItemSelectionModel *selectionModel = temp->selectionModel();
+		// QTableView *temp = static_cast<QTableView*>(currentWidget());
+		// QSortFilterProxyModel *proxy = static_cast<QSortFilterProxyModel*>(temp->model());
+		// QItemSelectionModel *selectionModel = temp->selectionModel();
 
-		const QModelIndexList indexes = selectionModel->selectedRows();
-		QString name;
-		QString address;
-		int row = -1;
+		// const QModelIndexList indexes = selectionModel->selectedRows();
+		// QString name;
+		// QString address;
+		// int row = -1;
 
-		for (const QModelIndex &index : indexes) {
-			row = proxy->mapToSource(index).row();
-			QModelIndex nameIndex = table->index(row, 0, QModelIndex());
-			QVariant varName = table->data(nameIndex, Qt::DisplayRole);
-			name = varName.toString();
+		// for (const QModelIndex &index : indexes) {
+		// 	row = proxy->mapToSource(index).row();
+		// 	QModelIndex nameIndex = table->index(row, 0, QModelIndex());
+		// 	QVariant varName = table->data(nameIndex, Qt::DisplayRole);
+		// 	name = varName.toString();
 
-			QModelIndex addressIndex = table->index(row, 1, QModelIndex());
-			QVariant varAddr = table->data(addressIndex, Qt::DisplayRole);
-			address = varAddr.toString();
-		}
-		AddDialog aDialog;
-		aDialog.setWindowTitle("Edit a Contact");
-		aDialog.editAddress(name, address);
+		// 	QModelIndex addressIndex = table->index(row, 1, QModelIndex());
+		// 	QVariant varAddr = table->data(addressIndex, Qt::DisplayRole);
+		// 	address = varAddr.toString();
+		// }
+		// AddDialog aDialog;
+		// aDialog.setWindowTitle("Edit a Contact");
+		// aDialog.editAddress(name, address);
 
-		if (aDialog.exec()) {
-			const QString newAddress = aDialog.address();
-			if (newAddress != address) {
-				const QModelIndex index = table->index(row, 1, QModelIndex());
-				table->setData(index, newAddress, Qt::EditRole);
-			}
-		}
+		// if (aDialog.exec()) {
+		// 	const QString newAddress = aDialog.address();
+		// 	if (newAddress != address) {
+		// 		const QModelIndex index = table->index(row, 1, QModelIndex());
+		// 		table->setData(index, newAddress, Qt::EditRole);
+		// 	}
+		// }
 	}
 	void removeEntry(){
-		QTableView *temp = static_cast<QTableView*>(currentWidget());
-		QSortFilterProxyModel *proxy = static_cast<QSortFilterProxyModel*>(temp->model());
-		QItemSelectionModel *selectionModel = temp->selectionModel();
+		// QTableView *temp = static_cast<QTableView*>(currentWidget());
+		// QSortFilterProxyModel *proxy = static_cast<QSortFilterProxyModel*>(temp->model());
+		// QItemSelectionModel *selectionModel = temp->selectionModel();
 
-		const QModelIndexList indexes = selectionModel->selectedRows();
+		// const QModelIndexList indexes = selectionModel->selectedRows();
 
-		for (QModelIndex index : indexes) {
-			int row = proxy->mapToSource(index).row();
-			table->removeRows(row, 1, QModelIndex());
-		}
+		// for (QModelIndex index : indexes) {
+		// 	int row = proxy->mapToSource(index).row();
+		// 	table->removeRows(row, 1, QModelIndex());
+		// }
 
-		if (table->rowCount(QModelIndex()) == 0)
-			insertTab(0, newAddressTab, tr("Address Book"));
+		// if (table->rowCount(QModelIndex()) == 0)
+		// 	insertTab(0, newAddressTab, tr("Address Book"));
 	}
 
 signals:
@@ -128,8 +128,7 @@ signals:
 private:
 	void setupTabs(){
 		using namespace Qt::StringLiterals;
-		const auto groups = { "ABC"_L1, "DEF"_L1, "GHI"_L1, "JKL"_L1, "MNO"_L1, "PQR"_L1,
-							 "STU"_L1, "VW"_L1, "XYZ"_L1 };
+		const auto groups = { "Processes"_L1, "Performance"_L1, "Startup"_L1, "Users"_L1, "Details"_L1, "Services"_L1};
 
 		for (QLatin1StringView str : groups) {
 			const auto regExp = QRegularExpression(QLatin1StringView("^[%1].*").arg(str),
@@ -161,8 +160,7 @@ private:
 		}
 	}
 
-    inline static QString fileName =
-        QStandardPaths::standardLocations(QStandardPaths::TempLocation).value(0) + QStringLiteral("/addressbook.dat");
+    inline static QString fileName = QStandardPaths::standardLocations(QStandardPaths::TempLocation).value(0) + QStringLiteral("/addressbook.dat");
     TableModel *table;
-    NewAddressTab *newAddressTab;
+    // NewAddressTab *newAddressTab;
 };
