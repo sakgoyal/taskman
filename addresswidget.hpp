@@ -48,7 +48,7 @@ public:
 		QFile file(fileName);
 
 		if (!file.open(QIODevice::WriteOnly)) {
-			QMessageBox::information(this, tr("Unable to open file"), file.errorString());
+			QMessageBox::information(this, "Unable to open file", file.errorString());
 			return;
 		}
 

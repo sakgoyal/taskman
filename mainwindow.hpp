@@ -3,15 +3,18 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QMenuBar>
-
+#include "addresswidget.hpp"
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-	MainWindow() : QMainWindow() {
-        // setCentralWidget(addressWidget);
+	MainWindow() : QMainWindow(),addressWidget(new AddressWidget) {
+        setCentralWidget(addressWidget);
         createMenus();
 		setWindowTitle("KTaskman");
+		// setWindowIcon(QIcon(":/images/icon.png"));
+		// setUnifiedTitleAndToolBarOnMac(true);
+		setMinimumSize(500, 400);
     }
 
 private:
@@ -41,7 +44,8 @@ private:
 
 
 	}
-    QAction *editAct;
+    AddressWidget *addressWidget;
+	QAction *editAct;
     QAction *removeAct;
 	QAction *refreshSpAct;
 };

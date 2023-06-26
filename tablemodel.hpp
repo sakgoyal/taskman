@@ -55,9 +55,9 @@ public:
         if (orientation == Qt::Horizontal) {
             switch (section) {
             case 0:
-                return tr("Name");
+                return "Name";
             case 1:
-                return tr("Address");
+                return "CPU Usage";
             default:
                 break;
             }
