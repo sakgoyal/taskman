@@ -20,6 +20,7 @@ qt_add_executable(taskman
     addresswidget.hpp
     mainwindow.hpp
     tablemodel.hpp
+    processesWidget.hpp
 )
 
 set_target_properties(taskman PROPERTIES

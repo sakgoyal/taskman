@@ -1,121 +1,69 @@
 #pragma once
 #include "tablemodel.hpp"
-
+#include </usr/include/proc/procps.h>
 #include <QItemSelection>
-#include <QTabWidget>
 #include <QStandardPaths>
+#include <QTabWidget>
 #include <QWidget>
 #include <QtWidgets>
-
+#include <fmt/format.h>
+#include <iostream>
+#include "processesWidget.hpp"
 QT_BEGIN_NAMESPACE
 class QSortFilterProxyModel;
 class QItemSelectionModel;
 QT_END_NAMESPACE
 
-class AddressWidget : public QTabWidget {
-    Q_OBJECT
+class AddressWidget: public QTabWidget {
+	Q_OBJECT
 
 public:
-	AddressWidget(QWidget *parent = nullptr): QTabWidget(parent), table(new TableModel(this)) {
-		using namespace Qt::StringLiterals;
-		const auto groups = { "Processes"_L1, "Performance"_L1, "Startup"_L1, "Users"_L1, "Details"_L1, "Services"_L1};
+	AddressWidget(QWidget *parent = nullptr): QTabWidget(parent) {
+		for (const QString &title: tabTitles) {
+			QWidget *tab = new QWidget(this);
+			processesWidget = new ProcessesWidget(tab);
+			this->addTab(processesWidget, title);
+		}
+			
+		// 	QStandardItemModel* model = new QStandardItemModel(0, 6, tab);
+			
+		// 	tableView->setFixedWidth(500);
+		// 	tableView->setSortingEnabled(true);
+		// 	tableView->verticalHeader()->hide();
+		// 	tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+		// 	tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+		// 	tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+			
+		// 	tableView->horizontalHeader()->setStretchLastSection(true);
+		// 	tableView->horizontalHeader()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+		// 	tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+		// 	tableView->horizontalHeader()->setSectionsMovable(true);
+		// 	tableView->horizontalHeader()->setDragEnabled(true);
+		// 	// tableView->horizontalHeader()->setScrollMode(QHeaderView::ScrollPerPixel);
+			
+		// 	for (int column = 0; column < headers.size(); ++column) {
+		// 		model->setHeaderData(column, Qt::Horizontal, headers[column]);
+		// 	}
 
-		for (QLatin1StringView str : groups) {
-			const auto regExp = QRegularExpression(QLatin1StringView("^[%1].*").arg(str), QRegularExpression::CaseInsensitiveOption);
-
-			auto proxyModel = new QSortFilterProxyModel(this);
-			proxyModel->setSourceModel(table);
-			proxyModel->setFilterRegularExpression(regExp);
-			proxyModel->setFilterKeyColumn(0);
-
-			QTableView *tableView = new QTableView;
-			tableView->setModel(proxyModel);
-			tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-			tableView->horizontalHeader()->setStretchLastSection(true);
-			tableView->verticalHeader()->hide();
-			tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-			tableView->setSelectionMode(QAbstractItemView::SingleSelection);
-			tableView->setSortingEnabled(true);
-
-			connect(tableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AddressWidget::selectionChanged);
-
-			connect(this, &QTabWidget::currentChanged, this, [this, tableView](int tabIndex) {
-				if (widget(tabIndex) == tableView)
-					emit selectionChanged(tableView->selectionModel()->selection());
-			});
-
-			addTab(tableView, str);		}
+		// 	tableView->setModel(model);
+		// 	this->addTab(tab, title);
+		// 	connect(tableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AddressWidget::selectionChanged);
+		// 	connect(this, &QTabWidget::currentChanged, this, [this, tableView](int tabIndex) {
+		// 		 if (widget(tabIndex) == tableView) emit selectionChanged(tableView->selectionModel()->selection());
+		//  	});
+		// }
 	}
-
 
 public slots:
-	void showAddEntryDialog(){
-		// AddDialog aDialog;
-		// if (aDialog.exec())
-		// 	addEntry(aDialog.name(), aDialog.address());
-	}
-	void addEntry(const QString &name, const QString &address){
-		// if (!table->getContacts().contains({ name, address })) {
-		// 	table->insertRows(0, 1, QModelIndex());
+	void showAddEntryDialog() { }
+	void addEntry(const QString &name, const QString &address) { }
+	void editEntry() {}
+	void removeEntry() {}
 
-		// 	QModelIndex index = table->index(0, 0, QModelIndex());
-		// 	table->setData(index, name, Qt::EditRole);
-		// 	index = table->index(0, 1, QModelIndex());
-		// 	table->setData(index, address, Qt::EditRole);
-		// 	removeTab(indexOf(newAddressTab));
-		// } else  QMessageBox::information(this, "Duplicate Name", tr("The name \"%1\" already exists.").arg(name));
-	}
-	void editEntry(){
-		// QTableView *temp = static_cast<QTableView*>(currentWidget());
-		// QSortFilterProxyModel *proxy = static_cast<QSortFilterProxyModel*>(temp->model());
-		// QItemSelectionModel *selectionModel = temp->selectionModel();
+  signals:
+	void selectionChanged(const QItemSelection &selected);
 
-		// const QModelIndexList indexes = selectionModel->selectedRows();
-		// QString name;
-		// QString address;
-		// int row = -1;
-
-		// for (const QModelIndex &index : indexes) {
-		// 	row = proxy->mapToSource(index).row();
-		// 	QModelIndex nameIndex = table->index(row, 0, QModelIndex());
-		// 	QVariant varName = table->data(nameIndex, Qt::DisplayRole);
-		// 	name = varName.toString();
-
-		// 	QModelIndex addressIndex = table->index(row, 1, QModelIndex());
-		// 	QVariant varAddr = table->data(addressIndex, Qt::DisplayRole);
-		// 	address = varAddr.toString();
-		// }
-		// AddDialog aDialog;
-		// aDialog.setWindowTitle("Edit a Contact");
-		// aDialog.editAddress(name, address);
-
-		// if (aDialog.exec()) {
-		// 	const QString newAddress = aDialog.address();
-		// 	if (newAddress != address) {
-		// 		const QModelIndex index = table->index(row, 1, QModelIndex());
-		// 		table->setData(index, newAddress, Qt::EditRole);
-		// 	}
-		// }
-	}
-	void removeEntry(){
-		// QTableView *temp = static_cast<QTableView*>(currentWidget());
-		// QSortFilterProxyModel *proxy = static_cast<QSortFilterProxyModel*>(temp->model());
-		// QItemSelectionModel *selectionModel = temp->selectionModel();
-
-		// const QModelIndexList indexes = selectionModel->selectedRows();
-
-		// for (QModelIndex index : indexes) {
-		// 	int row = proxy->mapToSource(index).row();
-		// 	table->removeRows(row, 1, QModelIndex());
-		// }
-
-		// if (table->rowCount(QModelIndex()) == 0)
-		// 	insertTab(0, newAddressTab, tr("Address Book"));
-	}
-
-signals:
-    void selectionChanged (const QItemSelection &selected);
-
-private:
-    TableModel *table;
+  private:
+	const std::vector<QString> tabTitles = {"Processes", "Performance", "Startup", "Users", "Details", "Services"};
+	ProcessesWidget *processesWidget;
 };

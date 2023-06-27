@@ -14,12 +14,13 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-	MainWindow() : QMainWindow(),addressWidget(new AddressWidget) {
-        setCentralWidget(addressWidget);
-        createMenus();
+	MainWindow() : QMainWindow(), addressWidget(new AddressWidget(this)){
 		setWindowTitle("KTaskman");
-		// setWindowIcon(QIcon(":/images/icon.png"));
 		setMinimumSize(500, 400);
+		createMenus(); // (File, Options, View)
+		setCentralWidget(addressWidget);
+		
+        // setWindowIcon(QIcon(":/images/icon.png"));
     }
 
 	std::vector<std::string> getProcList(std::string dir){

@@ -30,28 +30,22 @@ public:
             const auto &contact = contacts.at(index.row());
 
             switch (index.column()) {
-            case 0:
-                return contact.name;
-            case 1:
-                return contact.address;
-            default:
-                break;
+            case 0: return contact.name;
+            case 1: return contact.address;
+            default: break;
             }
         }
         return QVariant();
     }
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const override{
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override {
         if (role != Qt::DisplayRole)
             return QVariant();
 
         if (orientation == Qt::Horizontal) {
             switch (section) {
-            case 0:
-                return "Name";
-            case 1:
-                return "CPU Usage";
-            default:
-                break;
+            case 0: return "Name";
+            case 1: return "CPU Usage";
+            default: break;
             }
         }
         return QVariant();
